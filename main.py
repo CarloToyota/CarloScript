@@ -34,49 +34,6 @@ def lexer(_tokens:dict, _input:str):
 
     return found_tokens
 
-#def parse(_tokens:list):
-    dummy = None
-    skip_next = False
-
-    if "Error" in _tokens: raise ValueError
-
-    for i in range(len(_tokens)):
-        if skip_next:
-            skip_next = False
-        elif "int" in _tokens[i].keys():
-            if type(_tokens[i])==dict:
-                if not dummy: # it's the first number
-                    dummy = _tokens[i]["int"]
-                else:
-                    print(i)
-                    raise ValueError
-            elif _tokens[i] == "add":
-                if dummy:
-                    dummy += _tokens[i+1]["int"]
-                    skip_next = True #skip next because now go to next oporator
-                else:
-                    raise ValueError
-            elif _tokens[i] == "sub":
-                if dummy:
-                    dummy -= _tokens[i+1]["int"]
-                    skip_next = True #skip next because now go to next oporator
-                else:
-                    raise ValueError
-            elif _tokens[i] == "mul":
-                if dummy:
-                    dummy *= _tokens[i+1]["int"]
-                    skip_next = True #skip next because now go to next oporator
-                else:
-                    raise ValueError
-            elif _tokens[i] == "div":
-                if dummy:
-                    dummy /= _tokens[i+1]["int"]
-                    skip_next = True #skip next because now go to next oporator
-                else:
-                    raise ValueError
-
-    return dummy
-
 def parse(_tokens:list):
     if "Error" in _tokens: raise ValueError
     output = []
