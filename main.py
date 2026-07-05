@@ -1,6 +1,4 @@
-#Lexer for the calculator
-from typing import Any
-
+import functions
 tokens = {
     "+":"add",
     "-":"sub",
@@ -8,61 +6,100 @@ tokens = {
     "/":"div",
 }
 
+def check_int_float(s):
+    try:
+        int(s)
+        return "int"
+    except ValueError:
+        try:
+            float(s)
+            return "float"
+        except ValueError:
+            return None
+
 def lexer(_tokens:dict, _input:str):
     found_tokens = []
+    item_type = None
     for item in _input.split():
         if item in _tokens:
-            found_tokens.append(_tokens[item])
+            found_tokens.append({"id":_tokens[item]})
         else:
-            if item.isdigit():
-                found_tokens.append({"int":int(item)})
-            else:
+            item_type = check_int_float(item)
+            if not item_type:
                 found_tokens.append("Error")
+            elif item_type == "int":
+                found_tokens.append({"int":int(item)})
+            elif item_type == "float":
+                found_tokens.append({"float":float(item)})
 
     return found_tokens
 
-def parse(_tokens:list):
+#def parse(_tokens:list):
     dummy = None
     skip_next = False
+
+    if "Error" in _tokens: raise ValueError
+
     for i in range(len(_tokens)):
         if skip_next:
             skip_next = False
-        elif _tokens[i] == "Error":
-            raise ValueError
-        elif type(_tokens[i])==dict:
-            if not dummy: # it's the first number
-                dummy = _tokens[i]["int"]
-            else:
-                print(i)
-                raise ValueError
-        elif _tokens[i] == "add":
-            if dummy:
-                dummy += _tokens[i+1]["int"]
-                skip_next = True #skip next because now go to next oporator
-            else:
-                raise ValueError
-        elif _tokens[i] == "sub":
-            if dummy:
-                dummy -= _tokens[i+1]["int"]
-                skip_next = True #skip next because now go to next oporator
-            else:
-                raise ValueError
-        elif _tokens[i] == "mul":
-            if dummy:
-                dummy *= _tokens[i+1]["int"]
-                skip_next = True #skip next because now go to next oporator
-            else:
-                raise ValueError
-        elif _tokens[i] == "div":
-            if dummy:
-                dummy /= _tokens[i+1]["int"]
-                skip_next = True #skip next because now go to next oporator
-            else:
-                raise ValueError
+        elif "int" in _tokens[i].keys():
+            if type(_tokens[i])==dict:
+                if not dummy: # it's the first number
+                    dummy = _tokens[i]["int"]
+                else:
+                    print(i)
+                    raise ValueError
+            elif _tokens[i] == "add":
+                if dummy:
+                    dummy += _tokens[i+1]["int"]
+                    skip_next = True #skip next because now go to next oporator
+                else:
+                    raise ValueError
+            elif _tokens[i] == "sub":
+                if dummy:
+                    dummy -= _tokens[i+1]["int"]
+                    skip_next = True #skip next because now go to next oporator
+                else:
+                    raise ValueError
+            elif _tokens[i] == "mul":
+                if dummy:
+                    dummy *= _tokens[i+1]["int"]
+                    skip_next = True #skip next because now go to next oporator
+                else:
+                    raise ValueError
+            elif _tokens[i] == "div":
+                if dummy:
+                    dummy /= _tokens[i+1]["int"]
+                    skip_next = True #skip next because now go to next oporator
+                else:
+                    raise ValueError
 
     return dummy
 
-tokenized = lexer(tokens,"1 + 2 + 3 - 145")
+def parse(_tokens:list):
+    if "Error" in _tokens: raise ValueError
+    output = []
+    #current_action = {}
+    current_action = {"math":[]} #just for now
+    for i in range(len(_tokens)):
+        unpacked = [*_tokens[i]]
+        #print(unpacked)
+        if unpacked[0] == "int" or unpacked[0] == "float":
+            #print("number at position ", i)
+            current_action["math"].append(_tokens[i])
+        elif unpacked[0] == "id":
+            #print("id at position ", i)
+            current_action["math"].append(_tokens[i])
+    output.append(current_action)
+    return output
 
-print(tokenized)
+tokenized = lexer(tokens,"1 + 2.5 + 3 - 145")
+
+def run(parsed:list):
+    for action in parsed:
+        if [*action][0] == "math":
+            print(functions.math(action))
+
 print(parse(tokenized))
+run(parse(tokenized))
