@@ -1,4 +1,6 @@
 import functions
+import re
+
 tokens = {
     "+":"add",
     "-":"sub",
@@ -19,8 +21,10 @@ def check_int_float(s):
 
 def lexer(_tokens:dict, _input:str):
     found_tokens = []
-    item_type = None
-    for item in _input.split():
+
+    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[+\-*/]" #matches them
+
+    for item in re.findall(pattern, _input):
         if item in _tokens:
             found_tokens.append({"id":_tokens[item]})
         else:
@@ -51,7 +55,7 @@ def parse(_tokens:list):
     output.append(current_action)
     return output
 
-tokenized = lexer(tokens,"1 + 2.5 + 3 - 145")
+tokenized = lexer(tokens,input("Math: "))
 
 def run(parsed:list):
     for action in parsed:
