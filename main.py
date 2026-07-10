@@ -1,5 +1,6 @@
 import functions
 import re
+from toolbox import *
 
 tokens = {
     "+":"add",
@@ -8,21 +9,10 @@ tokens = {
     "/":"div",
 }
 
-def check_int_float(s):
-    try:
-        int(s)
-        return "int"
-    except ValueError:
-        try:
-            float(s)
-            return "float"
-        except ValueError:
-            return None
-
 def lexer(_tokens:dict, _input:str):
     found_tokens = []
 
-    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[+\-*/]" #matches them
+    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[+\-*/]" #matches them including scientific notation
 
     for item in re.findall(pattern, _input):
         if item in _tokens:
@@ -60,7 +50,7 @@ tokenized = lexer(tokens,input("Math: "))
 def run(parsed:list):
     for action in parsed:
         if [*action][0] == "math":
-            print(functions.math(action))
+            print(functions.math_oop(action))
 
-print(parse(tokenized))
+#print(parse(tokenized))
 run(parse(tokenized))
