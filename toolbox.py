@@ -1,4 +1,4 @@
-def check_int_float(s):
+def check_int_float(s:str):
     try:
         int(s)
         return "int"

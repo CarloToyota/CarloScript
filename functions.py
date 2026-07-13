@@ -130,5 +130,18 @@ def math_oop(_input): # first solve the multiplication/ division then the rest i
 
                 #print(_input)
                 mdoffset -= 2  # now that we remove 3 and add 1 we gotta adjust the offset by 2 because there are 2 less
+            print(_input)
+
+    #now it is necisary to re check all of the terms to make sure they are still the correct type or not (int or float)
+    for i,token in enumerate(_input["math"]):
+        key = [*token]
+        if "id" not in key:
+            current_key = key[0]
+            current_value = _input["math"][i][current_key]
+
+            new_key = check_int_float(str(current_value))
+            print(new_key)
+            if new_key != current_key:
+                _input["math"][i][new_key] = _input["math"][i].pop(current_key)
 
     return math(_input)
