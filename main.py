@@ -1,6 +1,7 @@
 import functions
 import re
 from toolbox import *
+import sys
 
 tokens = {
     "+":"add",
@@ -42,10 +43,12 @@ def parse(_tokens:list):
         elif unpacked[0] == "id":
             #print("id at position ", i)
             current_action["math"].append(_tokens[i])
+    if [*current_action["math"][-1]][0] == "id":
+        raise ValueError("Operator cant be the last thing in a math")
     output.append(current_action)
     return output
 
-tokenized = lexer(tokens,input("Math: "))
+tokenized = lexer(tokens, sys.argv[1])
 
 def run(parsed:list):
     for action in parsed:
