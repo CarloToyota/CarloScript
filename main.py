@@ -48,7 +48,13 @@ def parse(_tokens:list):
     output.append(current_action)
     return output
 
-tokenized = lexer(tokens, sys.argv[1])
+try:
+    with open(sys.argv[1], "r") as file:
+        content = file.read()
+        tokenized = lexer(tokens, content)
+        print(tokenized)
+except OSError:
+    tokenized = lexer(tokens, sys.argv[1])
 
 def run(parsed:list):
     for action in parsed:
