@@ -8,12 +8,15 @@ tokens = {
     "-":"sub",
     "*":"mul",
     "/":"div",
+    "(":"lparen",
+    ")":"rparen",
 }
+
 
 def lexer(_tokens:dict, _input:str):
     found_tokens = []
 
-    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[+\-*/]" #matches them including scientific notation
+    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[()+\-*/]" #matches them including scientific notation
 
     for item in re.findall(pattern, _input):
         if item in _tokens:
@@ -29,6 +32,7 @@ def lexer(_tokens:dict, _input:str):
 
     return found_tokens
 
+
 def parse(_tokens:list):
     if "Error" in _tokens: raise ValueError
     output = []
@@ -43,8 +47,8 @@ def parse(_tokens:list):
         elif unpacked[0] == "id":
             #print("id at position ", i)
             current_action["math"].append(_tokens[i])
-    if [*current_action["math"][-1]][0] == "id":
-        raise ValueError("Operator cant be the last thing in a math")
+    #if [* current_action["math"][-1]][0] == "id":
+    #    raise ValueError("Operator cant be the last thing in a math")
     output.append(current_action)
     return output
 
@@ -56,10 +60,11 @@ try:
 except OSError:
     tokenized = lexer(tokens, sys.argv[1])
 
+
 def run(parsed:list):
     for action in parsed:
         if [*action][0] == "math":
-            print(functions.math_oop(action))
+            print(functions.math_oop(functions.solve_paren(action)))
 
 #print(parse(tokenized))
 run(parse(tokenized))

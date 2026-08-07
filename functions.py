@@ -49,8 +49,41 @@ def math(_input):
                 else:
                     print("Unknown rule")
             rule = None
+    if round(dummy) == dummy:
+        return int(dummy)
+    else:
+        return float(dummy)
 
-    return dummy
+def solve_paren(_input): #its gonna solve all the parenthesis and then pass to math oop
+    while True:
+        found = False
+        stack = []
+        start,end = None,None
+        print(_input)
+        for i,token in enumerate(_input["math"]):
+            try:
+                if token["id"] == "lparen":
+                    stack.append(i)
+
+                elif token["id"] == "rparen":
+                    start = stack.pop()
+                    end = i
+                    innermost = _input["math"][start:end + 1]
+                    print([{"math":innermost[1:-1]}])
+                    answer = math_oop({"math":innermost[1:-1]})
+                    if check_int_float(str(answer)) == "int":
+                        new_token = {"int": answer}
+                    else:
+                        new_token = {"float": answer}
+
+                    _input["math"][start:end + 1] = [new_token]
+                    found = True
+                    break
+
+            except KeyError: pass
+        if not found: break
+
+    return _input
 
 def math_oop(_input): # first solve the multiplication/ division then the rest its just a filter for the normal math
     need_oop = False
@@ -145,3 +178,4 @@ def math_oop(_input): # first solve the multiplication/ division then the rest i
                 _input["math"][i][new_key] = _input["math"][i].pop(current_key)
 
     return math(_input)
+
