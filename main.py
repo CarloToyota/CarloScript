@@ -10,17 +10,21 @@ tokens = {
     "/":"div",
     "(":"lparen",
     ")":"rparen",
+    "^":"car"
 }
 
 
 def lexer(_tokens:dict, _input:str):
     found_tokens = []
 
-    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[()+\-*/]" #matches them including scientific notation
+    pattern = r"(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?|[()+\-*/^]" #matches them including scientific notation
 
     for item in re.findall(pattern, _input):
         if item in _tokens:
-            found_tokens.append({"id":_tokens[item]})
+            if item not in ["(",")"]:
+                found_tokens.append({"id":_tokens[item]})
+            else:
+                found_tokens.append({"par":_tokens[item]})
         else:
             item_type = check_int_float(item)
             if not item_type:
@@ -47,8 +51,11 @@ def parse(_tokens:list):
         elif unpacked[0] == "id":
             #print("id at position ", i)
             current_action["math"].append(_tokens[i])
-    #if [* current_action["math"][-1]][0] == "id":
-    #    raise ValueError("Operator cant be the last thing in a math")
+        elif unpacked[0] == "par":
+            #print("id at position ", i)
+            current_action["math"].append(_tokens[i])
+    if [* current_action["math"][-1]][0] == "id":
+        raise ValueError("Operator cant be the last thing in a math")
     output.append(current_action)
     return output
 
@@ -56,7 +63,6 @@ try:
     with open(sys.argv[1], "r") as file:
         content = file.read()
         tokenized = lexer(tokens, content)
-        print(tokenized)
 except OSError:
     tokenized = lexer(tokens, sys.argv[1])
 

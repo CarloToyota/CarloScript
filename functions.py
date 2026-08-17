@@ -59,17 +59,15 @@ def solve_paren(_input): #its gonna solve all the parenthesis and then pass to m
         found = False
         stack = []
         start,end = None,None
-        print(_input)
         for i,token in enumerate(_input["math"]):
             try:
-                if token["id"] == "lparen":
+                if token["par"] == "lparen":
                     stack.append(i)
 
-                elif token["id"] == "rparen":
+                elif token["par"] == "rparen":
                     start = stack.pop()
                     end = i
                     innermost = _input["math"][start:end + 1]
-                    print([{"math":innermost[1:-1]}])
                     answer = math_oop({"math":innermost[1:-1]})
                     if check_int_float(str(answer)) == "int":
                         new_token = {"int": answer}
@@ -163,7 +161,6 @@ def math_oop(_input): # first solve the multiplication/ division then the rest i
 
                 #print(_input)
                 mdoffset -= 2  # now that we remove 3 and add 1 we gotta adjust the offset by 2 because there are 2 less
-            print(_input)
 
     #now it is necisary to re check all of the terms to make sure they are still the correct type or not (int or float)
     for i,token in enumerate(_input["math"]):
@@ -173,7 +170,6 @@ def math_oop(_input): # first solve the multiplication/ division then the rest i
             current_value = _input["math"][i][current_key]
 
             new_key = check_int_float(str(current_value))
-            print(new_key)
             if new_key != current_key:
                 _input["math"][i][new_key] = _input["math"][i].pop(current_key)
 
